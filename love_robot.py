@@ -9,7 +9,7 @@ from zhdate import ZhDate
 # 请在这里修改你的个人信息
 
 # 企业微信机器人的Webhook地址
-WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=900a7f26-3c02-48f5-aa2f-68d0cbc62584"
+WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f6a4a592-512e-4f9d-9944-70ced7e6dfd8"
 
 # 和风天气的API Key
 QWEATHER_KEY = "c9a29f7b879547269b3742d7edd7a660"
