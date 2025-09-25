@@ -304,31 +304,66 @@ DIET_TIPS = [
 # --- 代码区 (以下部分通常无需修改) ---
 
 def get_weather():
-    """获取天气信息"""
+    """获取天气信息，带重试机制"""
     url = f"https://devapi.qweather.com/v7/weather/3d?location={LOCATION_ID}&key={QWEATHER_KEY}"
-    try:
-        response = requests.get(url, timeout=10)  # 添加超时设置
-        response.raise_for_status()  # 如果请求失败则抛出异常
-        data = response.json()
-        if data.get("code") == "200":
-            daily_forecast = data['daily'][0]
-            weather_info = {
-                'city': '沈北新区',  # 沈北新区
-                'date': daily_forecast['fxDate'],
-                'text_day': daily_forecast['textDay'],
-                'temp_max': daily_forecast['tempMax'],
-                'temp_min': daily_forecast['tempMin'],
-                'wind_dir': daily_forecast['windDirDay'],
-                'precip': daily_forecast.get('precip', '0'),  # 降水量
-            }
-            print(f"天气数据获取成功: {weather_info['text_day']} {weather_info['temp_min']}~{weather_info['temp_max']}°C")
-            return weather_info
-        else:
-            print(f"天气API返回错误: {data.get('code', '未知错误')}")
-    except requests.exceptions.RequestException as e:
-        print(f"获取天气失败: {e}")
-    except Exception as e:
-        print(f"处理天气数据时出错: {e}")
+    
+    # 重试配置
+    max_retries = 3
+    timeout = 15  # 增加超时时间到15秒
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"正在尝试获取天气信息... (第{attempt + 1}次尝试)")
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()
+            data = response.json()
+            
+            if data.get("code") == "200":
+                daily_forecast = data['daily'][0]
+                weather_info = {
+                    'city': '沈北新区',
+                    'date': daily_forecast['fxDate'],
+                    'text_day': daily_forecast['textDay'],
+                    'temp_max': daily_forecast['tempMax'],
+                    'temp_min': daily_forecast['tempMin'],
+                    'wind_dir': daily_forecast['windDirDay'],
+                    'precip': daily_forecast.get('precip', '0'),
+                }
+                print(f"天气数据获取成功: {weather_info['text_day']} {weather_info['temp_min']}~{weather_info['temp_max']}°C")
+                return weather_info
+            else:
+                print(f"天气API返回错误: {data.get('code', '未知错误')} - {data.get('code', '')}")
+                if attempt < max_retries - 1:
+                    print(f"等待2秒后重试...")
+                    import time
+                    time.sleep(2)
+                    
+        except requests.exceptions.Timeout as e:
+            print(f"获取天气超时 (第{attempt + 1}次尝试): {e}")
+            if attempt < max_retries - 1:
+                print(f"等待3秒后重试...")
+                import time
+                time.sleep(3)
+        except requests.exceptions.ConnectionError as e:
+            print(f"网络连接错误 (第{attempt + 1}次尝试): {e}")
+            if attempt < max_retries - 1:
+                print(f"等待3秒后重试...")
+                import time
+                time.sleep(3)
+        except requests.exceptions.RequestException as e:
+            print(f"获取天气失败 (第{attempt + 1}次尝试): {e}")
+            if attempt < max_retries - 1:
+                print(f"等待2秒后重试...")
+                import time
+                time.sleep(2)
+        except Exception as e:
+            print(f"处理天气数据时出错 (第{attempt + 1}次尝试): {e}")
+            if attempt < max_retries - 1:
+                print(f"等待2秒后重试...")
+                import time
+                time.sleep(2)
+    
+    print("天气获取失败，已尝试所有重试次数")
     return None
 
 

@@ -15,3 +15,4 @@ Register-ScheduledTask -TaskName "恋爱机器人自动发送" -Action $action -
 
 Write-Host "任务已创建成功！每天早上9点会自动运行恋爱机器人脚本。"
 Write-Host "你可以在任务计划程序中查看和管理这个任务。"
+

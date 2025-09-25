@@ -1,2 +1,6 @@
 天气数据获取成功: 多云 15~26°C
 2025-09-23 09:00:20 - 消息发送成功！
+天气数据获取成功: 多云 13~24°C
+2025-09-24 09:00:07 - 消息发送成功！
+获取天气失败: HTTPSConnectionPool(host='devapi.qweather.com', port=443): Read timed out. (read timeout=10)
+2025-09-25 09:00:13 - 消息发送成功！
